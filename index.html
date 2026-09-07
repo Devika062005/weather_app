@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SkyCast Weather</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --background: #eef4ff;
+            --card: #ffffff;
+            --text: #172033;
+            --muted: #718096;
+            --primary: #4f7cff;
+            --secondary: #e8efff;
+            --border: #e5eaf2;
+            --shadow: 0 20px 50px rgba(50, 76, 120, 0.12);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .container {
+            width: min(1150px, 92%);
+            margin: auto;
+            padding: 25px 0 40px;
+        }
+
+        /* HEADER */
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 45px;
+            height: 45px;
+            display: grid;
+            place-items: center;
+            background: var(--primary);
+            color: white;
+            border-radius: 14px;
+            font-size: 23px;
+            box-shadow: 0 10px 25px rgba(79, 124, 255, 0.3);
+        }
+
+        .brand h1 {
+            font-size: 24px;
+        }
+
+        .brand p {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 3px;
+        }
+
+        .theme-btn {
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            padding: 11px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* HERO */
+
+        .hero {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .hero h2 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            color: var(--muted);
+            font-size: 16px;
+        }
+
+        /* SEARCH */
+
+        .search-section {
+            max-width: 750px;
+            margin: 28px auto 35px;
+            background: var(--card);
+            padding: 8px;
+            border-radius: 18px;
+            display: flex;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .city-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: var(--text);
+            padding: 15px;
+            font-size: 16px;
+        }
+
+        .city-input::placeholder {
+            color: var(--muted);
+        }
+
+        .search-btn {
+            border: none;
+            background: var(--primary);
+            color: white;
+            padding: 0 25px;
+            border-radius: 13px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* WEATHER CARD */
+
+        .weather-card {
+            background: linear-gradient(135deg, #4f7cff, #7297ff);
+            border-radius: 30px;
+            padding: 35px;
+            color: white;
+            box-shadow: 0 25px 60px rgba(79, 124, 255, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .weather-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .place h2 {
+            font-size: 34px;
+            margin-bottom: 8px;
+        }
+
+        .place p {
+            opacity: 0.85;
+        }
+
+        .temperature {
+            font-size: 75px;
+            font-weight: bold;
+            margin: 20px 0 5px;
+        }
+
+        .feels {
+            opacity: 0.85;
+        }
+
+        .weather-status {
+            text-align: right;
+        }
+
+        .weather-icon {
+            font-size: 90px;
+            margin-bottom: 10px;
+        }
+
+        .weather-status p {
+            font-size: 18px;
+            text-transform: capitalize;
+        }
+
+        /* DETAILS */
+
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-top: 30px;
+        }
+
+        .detail {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 18px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .detail-icon {
+            font-size: 22px;
+            margin-bottom: 9px;
+        }
+
+        .detail h3 {
+            font-size: 17px;
+            margin-bottom: 5px;
+        }
+
+        .detail p {
+            opacity: 0.8;
+            font-size: 13px;
+        }
+
+        /* FAVORITES */
+
+        .favorites-section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .favorites-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .favorites-heading h3 {
+            font-size: 21px;
+        }
+
+        .favorites-heading span {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .favorites-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .favorite-item {
+            background: var(--secondary);
+            padding: 16px;
+            border-radius: 14px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .favorite-item h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .favorite-item p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 800px) {
+
+            .hero h2 {
+                font-size: 32px;
+            }
+
+            .weather-main {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .weather-status {
+                text-align: center;
+            }
+
+            .weather-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .favorites-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 550px) {
+
+            .container {
+                width: 94%;
+            }
+
+            .top-bar {
+                margin-bottom: 25px;
+            }
+
+            .brand h1 {
+                font-size: 20px;
+            }
+
+            .brand p {
+                display: none;
+            }
+
+            .hero h2 {
+                font-size: 27px;
+            }
+
+            .search-section {
+                flex-direction: column;
+                padding: 8px;
+            }
+
+            .search-btn {
+                height: 48px;
+            }
+
+            .weather-card {
+                padding: 25px 18px;
+            }
+
+            .temperature {
+                font-size: 58px;
+            }
+
+            .weather-details {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .favorites-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- TOP BAR -->
+
+        <div class="top-bar">
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    ☁️
+                </div>
+
+                <div>
+                    <h1>SkyCast</h1>
+                    <p>Weather Dashboard</p>
+                </div>
+
+            </div>
+
+            <button class="theme-btn" id="themeBtn">
+                🌙 Dark
+            </button>
+
+        </div>
+
+
+        <!-- HERO -->
+
+        <div class="hero">
+
+            <h2>Know Your Weather</h2>
+
+            <p>
+                Search any city and get real-time weather information.
+            </p>
+
+        </div>
+
+
+        <!-- SEARCH -->
+
+        <div class="search-section">
+
+            <input id="searchInput" class="city-input" type="text" placeholder="Search for a city...">
+
+            <button id="searchBtn" class="search-btn" type="button">
+                🔍 Search
+            </button>
+
+        </div>
+
+
+        <!-- WEATHER CARD -->
+
+        <div class="weather-card" id="weatherCard">
+
+            <div class="weather-main">
+
+                <div class="place">
+
+                    <h2 id="cityName">
+                        Malappuram, IN
+                    </h2>
+
+                    <p id="weatherCondition">
+                        Current weather conditions
+                    </p>
+
+                    <div class="temperature" id="temperature">
+                        28°C
+                    </div>
+
+                    <div class="feels" id="feelsLike">
+                        Feels like 30°C
+                    </div>
+
+                </div>
+
+
+                <div class="weather-status">
+
+                    <div class="weather-icon" id="weatherIcon">
+                        ☀️
+                    </div>
+
+                    <p id="weatherDescription">
+                        Clear Sky
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="weather-details">
+
+                <div class="detail">
+
+                    <div class="detail-icon">
+                        💧
+                    </div>
+
+                    <h3 id="humidity">
+                        72%
+                    </h3>
+
+                    <p>
+                        Humidity
+                    </p>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <div class="detail-icon">
+                        💨
+                    </div>
+
+                    <h3 id="windSpeed">
+                        4.2 m/s
+                    </h3>
+
+                    <p>
+                        Wind Speed
+                    </p>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <div class="detail-icon">
+                        🌡️
+                    </div>
+
+                    <h3 id="pressure">
+                        1012 hPa
+                    </h3>
+
+                    <p>
+                        Pressure
+                    </p>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <div class="detail-icon">
+                        👁️
+                    </div>
+
+                    <h3 id="visibility">
+                        9.5 km
+                    </h3>
+
+                    <p>
+                        Visibility
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- FAVORITES -->
+
+        <div class="favorites-section">
+
+            <div class="favorites-heading">
+
+                <h3>
+                    ⭐ Favorite Cities
+                </h3>
+
+                <span>
+                    Quick access
+                </span>
+
+            </div>
+
+
+            <div class="favorites-list" id="favorites">
+
+                <!-- JavaScript will add favorite cities here -->
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
